@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AviSim Calc</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #0b1220; color: #e8eefc; }
+    .wrap { max-width: 940px; margin: 24px auto; padding: 16px; }
+    .card { background: #111a2e; border: 1px solid #1f2c4a; border-radius: 14px; padding: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+
+    h1 { margin: 0 0 6px 0; font-size: 20px; }
+    .sub { margin: 0 0 14px 0; opacity: .8; font-size: 13px; line-height: 1.35; }
+
+    .statusbar { display:flex; gap:10px; align-items:center; margin: 0 0 10px 0; flex-wrap: wrap; }
+    .badge { font-size:12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+    .ok { border-color: rgba(84,255,167,.45); background: rgba(84,255,167,.10); }
+    .err { border-color: rgba(255,92,92,.55); background: rgba(255,92,92,.12); }
+
+    .tabs { display:flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tabbtn {
+      border: 1px solid #2a3a5f; background: #0f1730; color: #dbe6ff;
+      padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 700;
+      user-select: none;
+    }
+    .tabbtn.active { background: #1a2a52; border-color: #4b6bff; }
+
+    .tab { display:none; }
+    .tab.active { display:block; }
+
+    label { display:block; font-size: 12px; opacity: .9; margin-bottom: 6px; }
+    input {
+      width:100%; box-sizing:border-box; padding: 12px 12px;
+      border-radius: 12px; border: 1px solid #26375e; background: #0c1428; color: #e8eefc;
+      outline: none;
+    }
+    input:focus { border-color: #4b6bff; box-shadow: 0 0 0 3px rgba(75,107,255,.18); }
+    input[disabled] { opacity:.7; }
+
+    .grid3 { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .grid2 { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (max-width: 760px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
+
+    .btnrow { display:flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    button{
+      background: #1a2a52; border: 1px solid #2f4aa6; color: #e8eefc;
+      padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 800;
+    }
+    button:hover { filter: brightness(1.08); }
+
+    .hint { margin-top: 10px; font-size: 12px; opacity: .8; line-height: 1.35; }
+    .divider { height:1px; background: rgba(255,255,255,.08); margin: 14px 0; }
+
+    .out { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px dashed #2a3a5f; background: rgba(255,255,255,.03); }
+    .kv { display:grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: baseline; }
+    .k { opacity: .85; font-size: 13px; }
+    .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; font-weight: 800; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background: rgba(75,107,255,.14); border: 1px solid rgba(75,107,255,.35); font-size: 12px; margin-left: 8px; }
+    .small { font-size: 12px; opacity: .75; margin-top: 6px; line-height: 1.35; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="statusbar">
+        <span class="badge" id="jsBadge">JS: …</span>
+        <span class="badge err" id="errBadge" style="display:none;"></span>
+      </div>
+
+      <h1>AviSim Calc</h1>
+      <p class="sub">
+        Alt · Speed · Ver/speed · Pressure (+QNH/QFE/QNE). Оффлайн и по ссылке. <span class="pill">v1</span>
+      </p>
+
+      <div class="tabs" role="tablist" aria-label="tabs">
+        <div class="tabbtn active" data-tab="alt">Alt</div>
+        <div class="tabbtn" data-tab="speed">Speed</div>
+        <div class="tabbtn" data-tab="vs">Ver/speed</div>
+        <div class="tabbtn" data-tab="pressure">Pressure</div>
+      </div>
+
+      <!-- ALT -->
+      <section class="tab active" id="tab-alt">
+        <div class="grid3">
+          <div>
+            <label>Футы (ft)</label>
+            <input id="alt_ft" inputmode="decimal" placeholder="например 35000" />
+          </div>
+          <div>
+            <label>Метры (m)</label>
+            <input id="alt_m" inputmode="decimal" placeholder="например 10668" />
+          </div>
+          <div>
+            <label>Километры (km)</label>
+            <input id="alt_km" inputmode="decimal" placeholder="например 10.668" />
+          </div>
+        </div>
+        <div class="btnrow">
+          <button id="alt_clear">Очистить</button>
+        </div>
+        <div class="hint">Заполни любое одно поле — остальные обновятся автоматически.</div>
+      </section>
+
+      <!-- SPEED -->
+      <section class="tab" id="tab-speed">
+        <div class="grid3">
+          <div>
+            <label>Узлы (kt)</label>
+            <input id="spd_kt" inputmode="decimal" placeholder="например 250" />
+          </div>
+          <div>
+            <label>км/ч (km/h)</label>
+            <input id="spd_kmh" inputmode="decimal" placeholder="например 463" />
+          </div>
+          <div>
+            <label>миль/ч (mph)</label>
+            <input id="spd_mph" inputmode="decimal" placeholder="например 288" />
+          </div>
+          <div>
+            <label>м/с (m/s)</label>
+            <input id="spd_ms" inputmode="decimal" placeholder="например 128.6" />
+          </div>
+        </div>
+        <div class="btnrow">
+          <button id="spd_clear">Очистить</button>
+        </div>
+        <div class="hint">Заполни любое одно поле — остальные обновятся автоматически.</div>
+      </section>
+
+      <!-- VER/SPEED -->
+      <section class="tab" id="tab-vs">
+        <div class="grid2">
+          <div>
+            <label>Текущая высота (ft)</label>
+            <input id="cur_alt_ft" inputmode="decimal" placeholder="например 35000" />
+          </div>
+          <div>
+            <label>Целевая высота (ft)</label>
+            <input id="tgt_alt_ft" inputmode="decimal" placeholder="например 3000" />
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:12px;">
+          <div>
+            <label>Путевая скорость (GS, kt)</label>
+            <input id="gs_kt" inputmode="decimal" placeholder="например 280" />
+          </div>
+          <div>
+            <label>Профиль</label>
+            <input value="3° (правило 3:1)" disabled />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="calc_vs">Рассчитать</button>
+          <button id="vs_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="vs_out" style="display:none;">
+          <div class="kv">
+            <div class="k">Δ высоты (ft)</div><div class="v" id="out_delta_ft">—</div>
+            <div class="k">TOD (NM) <span class="pill">3:1</span></div><div class="v" id="out_tod_nm">—</div>
+            <div class="k">VS (fpm) <span class="pill">≈3°</span></div><div class="v" id="out_vsfpm">—</div>
+            <div class="k">Время (мин)</div><div class="v" id="out_time_min">—</div>
+          </div>
+          <div class="small">
+            TOD≈(Δft/1000)×3. VS≈GS×5.3 (минус = снижение).
+          </div>
+        </div>
+      </section>
+
+      <!-- PRESSURE -->
+      <section class="tab" id="tab-pressure">
+        <div class="grid3">
+          <div>
+            <label>hPa</label>
+            <input id="prs_hpa" inputmode="decimal" placeholder="например 1013.25" />
+          </div>
+          <div>
+            <label>inHg (дюймы рт.ст.)</label>
+            <input id="prs_inhg" inputmode="decimal" placeholder="например 29.92" />
+          </div>
+          <div>
+            <label>mmHg (мм рт.ст.)</label>
+            <input id="prs_mmhg" inputmode="decimal" placeholder="например 760" />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="prs_clear">Очистить</button>
+        </div>
+        <div class="hint">Заполни любое одно поле — остальные обновятся автоматически.</div>
+
+        <div class="divider"></div>
+
+        <div style="font-weight:800; margin-bottom:8px;">QNH / QFE / QNE</div>
+
+        <div class="grid2">
+          <div>
+            <label>Elevation аэродрома (ft)</label>
+            <input id="elev_ft" inputmode="decimal" placeholder="например 1500" />
+          </div>
+          <div>
+            <label>ΔP (hPa) по упрощению</label>
+            <input id="dp_hpa" value="—" disabled />
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <div>
+            <label>QNH (hPa)</label>
+            <input id="qnh_hpa" inputmode="decimal" placeholder="например 1013" />
+          </div>
+          <div>
+            <label>QFE (hPa)</label>
+            <input id="qfe_hpa" inputmode="decimal" placeholder="например 960" />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="btn_qfe_from_qnh">QFE из QNH</button>
+          <button id="btn_qnh_from_qfe">QNH из QFE</button>
+          <button id="btn_qne">QNE (1013.25 / 29.92)</button>
+          <button id="q_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="q_out" style="display:none;">
+          <div class="kv">
+            <div class="k">QNH</div><div class="v" id="out_qnh">—</div>
+            <div class="k">QFE</div><div class="v" id="out_qfe">—</div>
+            <div class="k">QNE</div><div class="v" id="out_qne">1013.25 hPa / 29.92 inHg</div>
+          </div>
+          <div class="small">
+            Упрощение: 1 hPa ≈ 27 ft (около уровня моря). ΔP≈Elev/27.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+<script>
+(() => {
+  const jsBadge = document.getElementById('jsBadge');
+  const errBadge = document.getElementById('errBadge');
+
+  const $ = (id) => document.getElementById(id);
+
+  const setJSOk = () => {
+    jsBadge.classList.add('ok');
+    jsBadge.textContent = 'JS: OK';
+  };
+  const setJSErr = (msg) => {
+    jsBadge.classList.remove('ok');
+    jsBadge.classList.add('err');
+    jsBadge.textContent = 'JS: ERROR';
+    errBadge.style.display = 'inline-block';
+    errBadge.textContent = 'Ошибка: ' + msg;
+  };
+
+  window.addEventListener('error', (e) => setJSErr(e.message || 'unknown'));
+  window.addEventListener('unhandledrejection', (e) => setJSErr((e.reason && e.reason.message) ? e.reason.message : String(e.reason)));
+
+  const parseNum = (val) => {
+    if (val == null) return null;
+    const s = String(val).trim().replace(',', '.');
+    if (!s) return null;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const fmt = (n, digits = 2) => {
+    if (!Number.isFinite(n)) return '—';
+    const z = Math.abs(n) < 1e-12 ? 0 : n;
+    const isInt = Math.abs(z - Math.round(z)) < 1e-9;
+    return isInt ? String(Math.round(z)) : z.toFixed(digits);
+  };
+
+  const setVal = (el, n, digits = 2) => {
+    el.value = (n == null || !Number.isFinite(n)) ? '' : fmt(n, digits);
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      /* ---------------- Tabs ---------------- */
+      const tabs = {
+        alt: $('tab-alt'),
+        speed: $('tab-speed'),
+        vs: $('tab-vs'),
+        pressure: $('tab-pressure'),
+      };
+      document.querySelectorAll('.tabbtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
+          Object.values(tabs).forEach(t => t.classList.remove('active'));
+          btn.classList.add('active');
+          tabs[btn.dataset.tab].classList.add('active');
+        });
+      });
+
+      /* ---------------- Alt converter ---------------- */
+      const alt_ft = $('alt_ft'), alt_m = $('alt_m'), alt_km = $('alt_km');
+      let altLock = false;
+
+      const altFromFt = (ft) => {
+        const m = ft * 0.3048;
+        return { ft, m, km: m / 1000 };
+      };
+      const altFromM = (m) => {
+        const ft = m / 0.3048;
+        return { ft, m, km: m / 1000 };
+      };
+      const altFromKm = (km) => {
+        const m = km * 1000;
+        const ft = m / 0.3048;
+        return { ft, m, km };
+      };
+
+      const updateAlt = (src) => {
+        if (altLock) return;
+        altLock = true;
+
+        const vft = parseNum(alt_ft.value);
+        const vm = parseNum(alt_m.value);
+        const vkm = parseNum(alt_km.value);
+
+        let res = null;
+        if (src === 'ft' && vft != null) res = altFromFt(vft);
+        else if (src === 'm' && vm != null) res = altFromM(vm);
+        else if (src === 'km' && vkm != null) res = altFromKm(vkm);
+        else {
+          const filled = [['ft', vft], ['m', vm], ['km', vkm]].filter(([,v]) => v != null);
+          if (filled.length === 1) {
+            const [k, v] = filled[0];
+            if (k === 'ft') res = altFromFt(v);
+            if (k === 'm') res = altFromM(v);
+            if (k === 'km') res = altFromKm(v);
+          }
+        }
+
+        if (res) {
+          if (src !== 'ft') setVal(alt_ft, res.ft, 0);
+          if (src !== 'm') setVal(alt_m, res.m, 0);
+          if (src !== 'km') setVal(alt_km, res.km, 3);
+        }
+
+        altLock = false;
+      };
+
+      alt_ft.addEventListener('input', () => updateAlt('ft'));
+      alt_m.addEventListener('input', () => updateAlt('m'));
+      alt_km.addEventListener('input', () => updateAlt('km'));
+      $('alt_clear').addEventListener('click', () => { alt_ft.value=''; alt_m.value=''; alt_km.value=''; });
+
+      /* ---------------- Speed converter ---------------- */
+      const spd_kt = $('spd_kt'), spd_kmh = $('spd_kmh'), spd_mph = $('spd_mph'), spd_ms = $('spd_ms');
+      let spdLock = false;
+
+      const KT_TO_KMH = 1.852;
+      const KT_TO_MPH = 1.150779448;
+      const KT_TO_MS  = 0.514444444;
+
+      const speedFromKt = (kt) => ({ kt, kmh: kt*KT_TO_KMH, mph: kt*KT_TO_MPH, ms: kt*KT_TO_MS });
+      const speedFromKmh = (kmh) => speedFromKt(kmh / KT_TO_KMH);
+      const speedFromMph = (mph) => speedFromKt(mph / KT_TO_MPH);
+      const speedFromMs  = (ms)  => speedFromKt(ms / KT_TO_MS);
+
+      const updateSpeed = (src) => {
+        if (spdLock) return;
+        spdLock = true;
+
+        const vkt  = parseNum(spd_kt.value);
+        const vkmh = parseNum(spd_kmh.value);
+        const vmph = parseNum(spd_mph.value);
+        const vms  = parseNum(spd_ms.value);
+
+        let res = null;
+        if (src === 'kt' && vkt != null) res = speedFromKt(vkt);
+        else if (src === 'kmh' && vkmh != null) res = speedFromKmh(vkmh);
+        else if (src === 'mph' && vmph != null) res = speedFromMph(vmph);
+        else if (src === 'ms' && vms != null) res = speedFromMs(vms);
+        else {
+          const filled = [['kt', vkt], ['kmh', vkmh], ['mph', vmph], ['ms', vms]].filter(([,v]) => v != null);
+          if (filled.length === 1) {
+            const [k, v] = filled[0];
+            if (k === 'kt') res = speedFromKt(v);
+            if (k === 'kmh') res = speedFromKmh(v);
+            if (k === 'mph') res = speedFromMph(v);
+            if (k === 'ms') res = speedFromMs(v);
+          }
+        }
+
+        if (res) {
+          if (src !== 'kt')  setVal(spd_kt,  res.kt,  2);
+          if (src !== 'kmh') setVal(spd_kmh, res.kmh, 2);
+          if (src !== 'mph') setVal(spd_mph, res.mph, 2);
+          if (src !== 'ms')  setVal(spd_ms,  res.ms,  2);
+        }
+
+        spdLock = false;
+      };
+
+      spd_kt.addEventListener('input', () => updateSpeed('kt'));
+      spd_kmh.addEventListener('input', () => updateSpeed('kmh'));
+      spd_mph.addEventListener('input', () => updateSpeed('mph'));
+      spd_ms.addEventListener('input', () => updateSpeed('ms'));
+      $('spd_clear').addEventListener('click', () => { spd_kt.value=''; spd_kmh.value=''; spd_mph.value=''; spd_ms.value=''; });
+
+      /* ---------------- Ver/speed ---------------- */
+      const calcVS = () => {
+        const cur = parseNum($('cur_alt_ft').value);
+        const tgt = parseNum($('tgt_alt_ft').value);
+        const gs  = parseNum($('gs_kt').value);
+
+        const out = $('vs_out');
+        out.style.display = 'none';
+
+        if (cur == null || tgt == null || gs == null) return;
+
+        const delta = cur - tgt; // ft
+        if (!Number.isFinite(delta) || Math.abs(delta) < 1e-12) return;
+
+        const todNm = Math.abs(delta) / 333.3333333333;   // 3 NM / 1000 ft
+        const vsFpm = gs * 5.3 * (delta > 0 ? -1 : 1);    // negative = descend
+        const timeMin = Math.abs(delta) / (Math.abs(vsFpm) || 1);
+
+        $('out_delta_ft').textContent = fmt(delta, 0);
+        $('out_tod_nm').textContent = fmt(todNm, 1);
+        $('out_vsfpm').textContent = fmt(vsFpm, 0);
+        $('out_time_min').textContent = fmt(timeMin, 1);
+
+        out.style.display = 'block';
+      };
+      $('calc_vs').addEventListener('click', calcVS);
+      $('vs_clear').addEventListener('click', () => {
+        $('cur_alt_ft').value=''; $('tgt_alt_ft').value=''; $('gs_kt').value='';
+        $('vs_out').style.display='none';
+      });
+
+      /* ---------------- Pressure converter ---------------- */
+      const prs_hpa = $('prs_hpa'), prs_inhg = $('prs_inhg'), prs_mmhg = $('prs_mmhg');
+      let prsLock = false;
+
+      const HPA_TO_INHG = 0.0295299830714;
+      const HPA_TO_MMHG = 0.750061683;
+
+      const pFromHpa = (hpa) => ({ hpa, inhg: hpa*HPA_TO_INHG, mmhg: hpa*HPA_TO_MMHG });
+      const pFromInhg = (inhg) => pFromHpa(inhg / HPA_TO_INHG);
+      const pFromMmhg = (mmhg) => pFromHpa(mmhg / HPA_TO_MMHG);
+
+      const updatePressure = (src) => {
+        if (prsLock) return;
+        prsLock = true;
+
+        const vh = parseNum(prs_hpa.value);
+        const vi = parseNum(prs_inhg.value);
+        const vm = parseNum(prs_mmhg.value);
+
+        let res = null;
+        if (src === 'hpa' && vh != null) res = pFromHpa(vh);
+        else if (src === 'inhg' && vi != null) res = pFromInhg(vi);
+        else if (src === 'mmhg' && vm != null) res = pFromMmhg(vm);
+        else {
+          const filled = [['hpa', vh], ['inhg', vi], ['mmhg', vm]].filter(([,v]) => v != null);
+          if (filled.length === 1) {
+            const [k, v] = filled[0];
+            if (k === 'hpa') res = pFromHpa(v);
+            if (k === 'inhg') res = pFromInhg(v);
+            if (k === 'mmhg') res = pFromMmhg(v);
+          }
+        }
+
+        if (res) {
+          if (src !== 'hpa')  setVal(prs_hpa,  res.hpa,  2);
+          if (src !== 'inhg') setVal(prs_inhg, res.inhg, 2);
+          if (src !== 'mmhg') setVal(prs_mmhg, res.mmhg, 2);
+        }
+
+        prsLock = false;
+      };
+
+      prs_hpa.addEventListener('input', () => updatePressure('hpa'));
+      prs_inhg.addEventListener('input', () => updatePressure('inhg'));
+      prs_mmhg.addEventListener('input', () => updatePressure('mmhg'));
+      $('prs_clear').addEventListener('click', () => { prs_hpa.value=''; prs_inhg.value=''; prs_mmhg.value=''; });
+
+      /* ---------------- QNH/QFE/QNE ---------------- */
+      const elev_ft = $('elev_ft');
+      const dp_hpa = $('dp_hpa');
+      const qnh_hpa = $('qnh_hpa');
+      const qfe_hpa = $('qfe_hpa');
+      const q_out = $('q_out');
+
+      const FT_PER_HPA = 27.0;
+
+      const calcDP = () => {
+        const e = parseNum(elev_ft.value);
+        if (e == null) { dp_hpa.value = '—'; return null; }
+        const dp = e / FT_PER_HPA;
+        dp_hpa.value = fmt(dp, 2);
+        return dp;
+      };
+      elev_ft.addEventListener('input', calcDP);
+
+      const showQ = (qnh, qfe) => {
+        $('out_qnh').textContent = Number.isFinite(qnh) ? `${fmt(qnh, 2)} hPa / ${fmt(qnh*HPA_TO_INHG, 2)} inHg` : '—';
+        $('out_qfe').textContent = Number.isFinite(qfe) ? `${fmt(qfe, 2)} hPa / ${fmt(qfe*HPA_TO_INHG, 2)} inHg` : '—';
+        $('out_qne').textContent = '1013.25 hPa / 29.92 inHg';
+        q_out.style.display = 'block';
+      };
+
+      $('btn_qfe_from_qnh').addEventListener('click', () => {
+        const dp = calcDP();
+        const qnh = parseNum(qnh_hpa.value);
+        if (dp == null || qnh == null) return;
+        const qfe = qnh - dp;
+        setVal(qfe_hpa, qfe, 2);
+        showQ(qnh, qfe);
+      });
+
+      $('btn_qnh_from_qfe').addEventListener('click', () => {
+        const dp = calcDP();
+        const qfe = parseNum(qfe_hpa.value);
+        if (dp == null || qfe == null) return;
+        const qnh = qfe + dp;
+        setVal(qnh_hpa, qnh, 2);
+        showQ(qnh, qfe);
+      });
+
+      $('btn_qne').addEventListener('click', () => {
+        setVal(prs_hpa, 1013.25, 2);
+        updatePressure('hpa');
+        q_out.style.display = 'block';
+        $('out_qnh').textContent = '—';
+        $('out_qfe').textContent = '—';
+        $('out_qne').textContent = '1013.25 hPa / 29.92 inHg';
+      });
+
+      $('q_clear').addEventListener('click', () => {
+        elev_ft.value = '';
+        dp_hpa.value = '—';
+        qnh_hpa.value = '';
+        qfe_hpa.value = '';
+        q_out.style.display = 'none';
+      });
+
+      setJSOk();
+    } catch (e) {
+      setJSErr(e && e.message ? e.message : String(e));
+    }
+  });
+})();
+</script>
+</body>
+</html>
