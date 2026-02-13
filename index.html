@@ -7,21 +7,16 @@
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
     body { margin: 0; background: #0b1220; color: #e8eefc; }
-    .wrap { max-width: 940px; margin: 24px auto; padding: 16px; }
+    .wrap { max-width: 1040px; margin: 24px auto; padding: 16px; }
     .card { background: #111a2e; border: 1px solid #1f2c4a; border-radius: 14px; padding: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
 
     h1 { margin: 0 0 6px 0; font-size: 20px; }
     .sub { margin: 0 0 14px 0; opacity: .8; font-size: 13px; line-height: 1.35; }
 
-    .statusbar { display:flex; gap:10px; align-items:center; margin: 0 0 10px 0; flex-wrap: wrap; }
-    .badge { font-size:12px; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
-    .ok { border-color: rgba(84,255,167,.45); background: rgba(84,255,167,.10); }
-    .err { border-color: rgba(255,92,92,.55); background: rgba(255,92,92,.12); }
-
     .tabs { display:flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
     .tabbtn {
       border: 1px solid #2a3a5f; background: #0f1730; color: #dbe6ff;
-      padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 700;
+      padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 800;
       user-select: none;
     }
     .tabbtn.active { background: #1a2a52; border-color: #4b6bff; }
@@ -30,22 +25,24 @@
     .tab.active { display:block; }
 
     label { display:block; font-size: 12px; opacity: .9; margin-bottom: 6px; }
-    input {
+    input, select {
       width:100%; box-sizing:border-box; padding: 12px 12px;
       border-radius: 12px; border: 1px solid #26375e; background: #0c1428; color: #e8eefc;
       outline: none;
     }
-    input:focus { border-color: #4b6bff; box-shadow: 0 0 0 3px rgba(75,107,255,.18); }
+    input:focus, select:focus { border-color: #4b6bff; box-shadow: 0 0 0 3px rgba(75,107,255,.18); }
     input[disabled] { opacity:.7; }
 
+    .grid4 { display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .grid3 { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .grid2 { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    @media (max-width: 760px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) { .grid4 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) { .grid4, .grid3, .grid2 { grid-template-columns: 1fr; } }
 
     .btnrow { display:flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
     button{
       background: #1a2a52; border: 1px solid #2f4aa6; color: #e8eefc;
-      padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 800;
+      padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900;
     }
     button:hover { filter: brightness(1.08); }
 
@@ -55,29 +52,33 @@
     .out { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px dashed #2a3a5f; background: rgba(255,255,255,.03); }
     .kv { display:grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: baseline; }
     .k { opacity: .85; font-size: 13px; }
-    .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; font-weight: 800; }
+    .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; font-weight: 900; }
+
     .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background: rgba(75,107,255,.14); border: 1px solid rgba(75,107,255,.35); font-size: 12px; margin-left: 8px; }
     .small { font-size: 12px; opacity: .75; margin-top: 6px; line-height: 1.35; }
+
+    .titleRow { display:flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .sectionTitle { font-weight: 900; margin: 0; }
+    .muted { opacity: .8; font-size: 12px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <div class="statusbar">
-        <span class="badge" id="jsBadge">JS: …</span>
-        <span class="badge err" id="errBadge" style="display:none;"></span>
-      </div>
-
       <h1>AviSim Calc</h1>
       <p class="sub">
-        Alt · Speed · Ver/speed · Pressure (+QNH/QFE/QNE). Оффлайн и по ссылке. <span class="pill">v1</span>
+        Alt · Speed · Pressure · Atmos · VNAV · Wind · Airspeed
+        <span class="pill">один файл</span>
       </p>
 
       <div class="tabs" role="tablist" aria-label="tabs">
         <div class="tabbtn active" data-tab="alt">Alt</div>
         <div class="tabbtn" data-tab="speed">Speed</div>
-        <div class="tabbtn" data-tab="vs">Ver/speed</div>
         <div class="tabbtn" data-tab="pressure">Pressure</div>
+        <div class="tabbtn" data-tab="atmos">Atmos</div>
+        <div class="tabbtn" data-tab="vnav">VNAV</div>
+        <div class="tabbtn" data-tab="wind">Wind</div>
+        <div class="tabbtn" data-tab="airspeed">Mach/IAS/TAS</div>
       </div>
 
       <!-- ALT -->
@@ -104,7 +105,7 @@
 
       <!-- SPEED -->
       <section class="tab" id="tab-speed">
-        <div class="grid3">
+        <div class="grid4">
           <div>
             <label>Узлы (kt)</label>
             <input id="spd_kt" inputmode="decimal" placeholder="например 250" />
@@ -128,50 +129,14 @@
         <div class="hint">Заполни любое одно поле — остальные обновятся автоматически.</div>
       </section>
 
-      <!-- VER/SPEED -->
-      <section class="tab" id="tab-vs">
-        <div class="grid2">
-          <div>
-            <label>Текущая высота (ft)</label>
-            <input id="cur_alt_ft" inputmode="decimal" placeholder="например 35000" />
-          </div>
-          <div>
-            <label>Целевая высота (ft)</label>
-            <input id="tgt_alt_ft" inputmode="decimal" placeholder="например 3000" />
-          </div>
-        </div>
-        <div class="grid2" style="margin-top:12px;">
-          <div>
-            <label>Путевая скорость (GS, kt)</label>
-            <input id="gs_kt" inputmode="decimal" placeholder="например 280" />
-          </div>
-          <div>
-            <label>Профиль</label>
-            <input value="3° (правило 3:1)" disabled />
-          </div>
-        </div>
-
-        <div class="btnrow">
-          <button id="calc_vs">Рассчитать</button>
-          <button id="vs_clear">Очистить</button>
-        </div>
-
-        <div class="out" id="vs_out" style="display:none;">
-          <div class="kv">
-            <div class="k">Δ высоты (ft)</div><div class="v" id="out_delta_ft">—</div>
-            <div class="k">TOD (NM) <span class="pill">3:1</span></div><div class="v" id="out_tod_nm">—</div>
-            <div class="k">VS (fpm) <span class="pill">≈3°</span></div><div class="v" id="out_vsfpm">—</div>
-            <div class="k">Время (мин)</div><div class="v" id="out_time_min">—</div>
-          </div>
-          <div class="small">
-            TOD≈(Δft/1000)×3. VS≈GS×5.3 (минус = снижение).
-          </div>
-        </div>
-      </section>
-
       <!-- PRESSURE -->
       <section class="tab" id="tab-pressure">
-        <div class="grid3">
+        <div class="titleRow">
+          <div class="sectionTitle">Pressure converter</div>
+          <div class="muted">hPa ↔ inHg ↔ mmHg</div>
+        </div>
+
+        <div class="grid3" style="margin-top:10px;">
           <div>
             <label>hPa</label>
             <input id="prs_hpa" inputmode="decimal" placeholder="например 1013.25" />
@@ -189,77 +154,308 @@
         <div class="btnrow">
           <button id="prs_clear">Очистить</button>
         </div>
-        <div class="hint">Заполни любое одно поле — остальные обновятся автоматически.</div>
 
         <div class="divider"></div>
 
-        <div style="font-weight:800; margin-bottom:8px;">QNH / QFE / QNE</div>
+        <div class="titleRow">
+          <div class="sectionTitle">QNH / QFE / QNE</div>
+          <div class="muted">упрощение: 1 hPa ≈ 27 ft</div>
+        </div>
 
-        <div class="grid2">
+        <div class="grid2" style="margin-top:10px;">
           <div>
             <label>Elevation аэродрома (ft)</label>
-            <input id="elev_ft" inputmode="decimal" placeholder="например 1500" />
+            <input id="q_elev_ft" inputmode="decimal" placeholder="например 1500" />
           </div>
           <div>
-            <label>ΔP (hPa) по упрощению</label>
-            <input id="dp_hpa" value="—" disabled />
+            <label>ΔP по Elevation (hPa)</label>
+            <input id="q_dp_hpa" disabled value="—" />
           </div>
         </div>
 
         <div class="grid2" style="margin-top:12px;">
           <div>
             <label>QNH (hPa)</label>
-            <input id="qnh_hpa" inputmode="decimal" placeholder="например 1013" />
+            <input id="q_qnh_hpa" inputmode="decimal" placeholder="например 1013" />
           </div>
           <div>
             <label>QFE (hPa)</label>
-            <input id="qfe_hpa" inputmode="decimal" placeholder="например 960" />
+            <input id="q_qfe_hpa" inputmode="decimal" placeholder="например 960" />
           </div>
         </div>
 
         <div class="btnrow">
-          <button id="btn_qfe_from_qnh">QFE из QNH</button>
-          <button id="btn_qnh_from_qfe">QNH из QFE</button>
-          <button id="btn_qne">QNE (1013.25 / 29.92)</button>
+          <button id="q_btn_qfe_from_qnh">QFE из QNH</button>
+          <button id="q_btn_qnh_from_qfe">QNH из QFE</button>
+          <button id="q_btn_qne">QNE (1013.25 / 29.92)</button>
           <button id="q_clear">Очистить</button>
         </div>
 
         <div class="out" id="q_out" style="display:none;">
           <div class="kv">
-            <div class="k">QNH</div><div class="v" id="out_qnh">—</div>
-            <div class="k">QFE</div><div class="v" id="out_qfe">—</div>
-            <div class="k">QNE</div><div class="v" id="out_qne">1013.25 hPa / 29.92 inHg</div>
+            <div class="k">QNH</div><div class="v" id="q_out_qnh">—</div>
+            <div class="k">QFE</div><div class="v" id="q_out_qfe">—</div>
+            <div class="k">QNE</div><div class="v">1013.25 hPa / 29.92 inHg</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="titleRow">
+          <div class="sectionTitle">Ошибка высотомера при неверном QNH</div>
+          <div class="muted">≈ 27 ft на 1 hPa</div>
+        </div>
+
+        <div class="grid3" style="margin-top:10px;">
+          <div>
+            <label>Indicated altitude (ft)</label>
+            <input id="alt_err_ind_ft" inputmode="decimal" placeholder="например 3000" />
+          </div>
+          <div>
+            <label>Установлено QNH (hPa)</label>
+            <input id="alt_err_set_hpa" inputmode="decimal" placeholder="например 1013" />
+          </div>
+          <div>
+            <label>Фактическое QNH (hPa)</label>
+            <input id="alt_err_act_hpa" inputmode="decimal" placeholder="например 1003" />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="alt_err_calc">Рассчитать</button>
+          <button id="alt_err_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="alt_err_out" style="display:none;">
+          <div class="kv">
+            <div class="k">Ошибка показаний (Indicated − True), ft</div><div class="v" id="alt_err_out_err">—</div>
+            <div class="k">True altitude (ft)</div><div class="v" id="alt_err_out_true">—</div>
           </div>
           <div class="small">
-            Упрощение: 1 hPa ≈ 27 ft (около уровня моря). ΔP≈Elev/27.
+            Если установлено QNH выше фактического — высотомер будет показывать выше (опасно при снижении).
           </div>
         </div>
       </section>
 
+      <!-- ATMOS -->
+      <section class="tab" id="tab-atmos">
+        <div class="titleRow">
+          <div class="sectionTitle">ISA deviation + Pressure/Density Altitude</div>
+          <div class="muted">ISA-модель (до тропопаузы), оценочные формулы для сим</div>
+        </div>
+
+        <div class="grid4" style="margin-top:10px;">
+          <div>
+            <label>Altitude (ft)</label>
+            <input id="atm_alt_ft" inputmode="decimal" placeholder="например 8000" />
+          </div>
+          <div>
+            <label>OAT (°C)</label>
+            <input id="atm_oat_c" inputmode="decimal" placeholder="например 5" />
+          </div>
+          <div>
+            <label>Altimeter setting / QNH (hPa)</label>
+            <input id="atm_qnh_hpa" inputmode="decimal" placeholder="например 1006" />
+          </div>
+          <div>
+            <label>Высота для cold-correction (ft)</label>
+            <input id="atm_height_ft" inputmode="decimal" placeholder="например 3000" />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="atm_calc">Рассчитать</button>
+          <button id="atm_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="atm_out" style="display:none;">
+          <div class="kv">
+            <div class="k">ISA temp на Altitude (°C)</div><div class="v" id="atm_out_isa_c">—</div>
+            <div class="k">ΔISA (OAT − ISA), °C</div><div class="v" id="atm_out_disa">—</div>
+            <div class="k">Pressure Altitude (ft)</div><div class="v" id="atm_out_pa">—</div>
+            <div class="k">Density Altitude (ft)</div><div class="v" id="atm_out_da">—</div>
+            <div class="k">Temp correction (true − indicated), ft</div><div class="v" id="atm_out_tc">—</div>
+          </div>
+          <div class="small">
+            Pressure Altitude (прибл.): PA ≈ IndAlt + (1013.25 − QNH)×27. <br/>
+            Density Altitude (прибл.): DA ≈ PA + 120×(OAT − ISA@PA). <br/>
+            Темп. поправка (оценка): true−indicated ≈ 4×(Height/1000)×ΔISA.
+          </div>
+        </div>
+      </section>
+
+      <!-- VNAV -->
+      <section class="tab" id="tab-vnav">
+        <div class="titleRow">
+          <div class="sectionTitle">VNAV descent (TOD/VS) с учётом ветра</div>
+          <div class="muted">можно вводить GS напрямую или TAS+wind component</div>
+        </div>
+
+        <div class="grid4" style="margin-top:10px;">
+          <div>
+            <label>Current altitude (ft)</label>
+            <input id="vn_cur_ft" inputmode="decimal" placeholder="например 35000" />
+          </div>
+          <div>
+            <label>Target altitude (ft)</label>
+            <input id="vn_tgt_ft" inputmode="decimal" placeholder="например 3000" />
+          </div>
+          <div>
+            <label>Descent angle (deg)</label>
+            <input id="vn_angle_deg" inputmode="decimal" value="3.0" />
+          </div>
+          <div>
+            <label>Decel/Buffer (NM)</label>
+            <input id="vn_buf_nm" inputmode="decimal" value="0" />
+          </div>
+        </div>
+
+        <div class="grid4" style="margin-top:12px;">
+          <div>
+            <label>GS (kt) (если знаешь)</label>
+            <input id="vn_gs_kt" inputmode="decimal" placeholder="например 280" />
+          </div>
+          <div>
+            <label>TAS (kt) (если GS нет)</label>
+            <input id="vn_tas_kt" inputmode="decimal" placeholder="например 290" />
+          </div>
+          <div>
+            <label>Wind component (kt)</label>
+            <input id="vn_windcomp_kt" inputmode="decimal" placeholder="+10 headwind / -10 tailwind" />
+          </div>
+          <div>
+            <label>Computed GS (kt)</label>
+            <input id="vn_gs_calc" disabled value="—" />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="vn_calc">Рассчитать</button>
+          <button id="vn_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="vn_out" style="display:none;">
+          <div class="kv">
+            <div class="k">Δ высоты (ft)</div><div class="v" id="vn_out_dalt">—</div>
+            <div class="k">TOD (NM)</div><div class="v" id="vn_out_tod">—</div>
+            <div class="k">VS (fpm)</div><div class="v" id="vn_out_vs">—</div>
+            <div class="k">Time (min)</div><div class="v" id="vn_out_time">—</div>
+          </div>
+          <div class="small">
+            TOD = Δft / (6076×tan(angle)) + buffer. VS = GS×(6076×tan(angle))/60.
+          </div>
+        </div>
+      </section>
+
+      <!-- WIND -->
+      <section class="tab" id="tab-wind">
+        <div class="titleRow">
+          <div class="sectionTitle">Wind correction angle (WCA)</div>
+          <div class="muted">курс + ветер → WCA, heading, GS</div>
+        </div>
+
+        <div class="grid4" style="margin-top:10px;">
+          <div>
+            <label>Course (deg)</label>
+            <input id="w_course" inputmode="decimal" placeholder="например 090" />
+          </div>
+          <div>
+            <label>TAS (kt)</label>
+            <input id="w_tas" inputmode="decimal" placeholder="например 280" />
+          </div>
+          <div>
+            <label>Wind FROM (deg)</label>
+            <input id="w_from" inputmode="decimal" placeholder="например 240" />
+          </div>
+          <div>
+            <label>Wind speed (kt)</label>
+            <input id="w_spd" inputmode="decimal" placeholder="например 25" />
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="w_calc">Рассчитать</button>
+          <button id="w_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="w_out" style="display:none;">
+          <div class="kv">
+            <div class="k">Crosswind (kt) (+ вправо)</div><div class="v" id="w_out_xw">—</div>
+            <div class="k">Head/Tail (kt) (+ tailwind)</div><div class="v" id="w_out_ht">—</div>
+            <div class="k">WCA (deg) (+ crab right)</div><div class="v" id="w_out_wca">—</div>
+            <div class="k">Heading (deg)</div><div class="v" id="w_out_hdg">—</div>
+            <div class="k">Ground speed (kt)</div><div class="v" id="w_out_gs">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AIRSPEED -->
+      <section class="tab" id="tab-airspeed">
+        <div class="titleRow">
+          <div class="sectionTitle">Mach ↔ IAS ↔ TAS</div>
+          <div class="muted">ISA-атмосфера, приближение IAS≈EAS (для сим обычно норм)</div>
+        </div>
+
+        <div class="grid4" style="margin-top:10px;">
+          <div>
+            <label>Altitude (ft)</label>
+            <input id="as_alt_ft" inputmode="decimal" placeholder="например 35000" />
+          </div>
+          <div>
+            <label>OAT (°C)</label>
+            <input id="as_oat_c" inputmode="decimal" placeholder="например -50" />
+          </div>
+          <div>
+            <label>IAS (kt)</label>
+            <input id="as_ias_kt" inputmode="decimal" placeholder="например 250" />
+          </div>
+          <div>
+            <label>TAS (kt)</label>
+            <input id="as_tas_kt" inputmode="decimal" placeholder="например 450" />
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <div>
+            <label>Mach</label>
+            <input id="as_mach" inputmode="decimal" placeholder="например 0.78" />
+          </div>
+          <div>
+            <label>Режим пересчёта</label>
+            <select id="as_mode">
+              <option value="ias_to_tas">IAS → TAS + Mach</option>
+              <option value="tas_to_ias">TAS → IAS + Mach</option>
+              <option value="mach_to_tas">Mach → TAS</option>
+              <option value="tas_to_mach">TAS → Mach</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button id="as_calc">Рассчитать</button>
+          <button id="as_clear">Очистить</button>
+        </div>
+
+        <div class="out" id="as_out" style="display:none;">
+          <div class="kv">
+            <div class="k">ISA temp @ Alt (°C)</div><div class="v" id="as_out_isa">—</div>
+            <div class="k">Speed of sound (kt)</div><div class="v" id="as_out_a">—</div>
+            <div class="k">Sigma (ρ/ρ0)</div><div class="v" id="as_out_sigma">—</div>
+            <div class="k">IAS (kt)</div><div class="v" id="as_out_ias">—</div>
+            <div class="k">TAS (kt)</div><div class="v" id="as_out_tas">—</div>
+            <div class="k">Mach</div><div class="v" id="as_out_m">—</div>
+          </div>
+          <div class="small">
+            Используется плотность по ISA/ОАТ и приближение: TAS ≈ IAS / √sigma (IAS≈EAS).
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
 <script>
 (() => {
-  const jsBadge = document.getElementById('jsBadge');
-  const errBadge = document.getElementById('errBadge');
-
   const $ = (id) => document.getElementById(id);
-
-  const setJSOk = () => {
-    jsBadge.classList.add('ok');
-    jsBadge.textContent = 'JS: OK';
-  };
-  const setJSErr = (msg) => {
-    jsBadge.classList.remove('ok');
-    jsBadge.classList.add('err');
-    jsBadge.textContent = 'JS: ERROR';
-    errBadge.style.display = 'inline-block';
-    errBadge.textContent = 'Ошибка: ' + msg;
-  };
-
-  window.addEventListener('error', (e) => setJSErr(e.message || 'unknown'));
-  window.addEventListener('unhandledrejection', (e) => setJSErr((e.reason && e.reason.message) ? e.reason.message : String(e.reason)));
 
   const parseNum = (val) => {
     if (val == null) return null;
@@ -280,275 +476,527 @@
     el.value = (n == null || !Number.isFinite(n)) ? '' : fmt(n, digits);
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    try {
-      /* ---------------- Tabs ---------------- */
-      const tabs = {
-        alt: $('tab-alt'),
-        speed: $('tab-speed'),
-        vs: $('tab-vs'),
-        pressure: $('tab-pressure'),
-      };
-      document.querySelectorAll('.tabbtn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
-          Object.values(tabs).forEach(t => t.classList.remove('active'));
-          btn.classList.add('active');
-          tabs[btn.dataset.tab].classList.add('active');
-        });
-      });
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const toRad = (deg) => deg * Math.PI / 180;
+  const norm360 = (deg) => {
+    let d = deg % 360;
+    if (d < 0) d += 360;
+    return d;
+  };
 
-      /* ---------------- Alt converter ---------------- */
-      const alt_ft = $('alt_ft'), alt_m = $('alt_m'), alt_km = $('alt_km');
-      let altLock = false;
-
-      const altFromFt = (ft) => {
-        const m = ft * 0.3048;
-        return { ft, m, km: m / 1000 };
-      };
-      const altFromM = (m) => {
-        const ft = m / 0.3048;
-        return { ft, m, km: m / 1000 };
-      };
-      const altFromKm = (km) => {
-        const m = km * 1000;
-        const ft = m / 0.3048;
-        return { ft, m, km };
-      };
-
-      const updateAlt = (src) => {
-        if (altLock) return;
-        altLock = true;
-
-        const vft = parseNum(alt_ft.value);
-        const vm = parseNum(alt_m.value);
-        const vkm = parseNum(alt_km.value);
-
-        let res = null;
-        if (src === 'ft' && vft != null) res = altFromFt(vft);
-        else if (src === 'm' && vm != null) res = altFromM(vm);
-        else if (src === 'km' && vkm != null) res = altFromKm(vkm);
-        else {
-          const filled = [['ft', vft], ['m', vm], ['km', vkm]].filter(([,v]) => v != null);
-          if (filled.length === 1) {
-            const [k, v] = filled[0];
-            if (k === 'ft') res = altFromFt(v);
-            if (k === 'm') res = altFromM(v);
-            if (k === 'km') res = altFromKm(v);
-          }
-        }
-
-        if (res) {
-          if (src !== 'ft') setVal(alt_ft, res.ft, 0);
-          if (src !== 'm') setVal(alt_m, res.m, 0);
-          if (src !== 'km') setVal(alt_km, res.km, 3);
-        }
-
-        altLock = false;
-      };
-
-      alt_ft.addEventListener('input', () => updateAlt('ft'));
-      alt_m.addEventListener('input', () => updateAlt('m'));
-      alt_km.addEventListener('input', () => updateAlt('km'));
-      $('alt_clear').addEventListener('click', () => { alt_ft.value=''; alt_m.value=''; alt_km.value=''; });
-
-      /* ---------------- Speed converter ---------------- */
-      const spd_kt = $('spd_kt'), spd_kmh = $('spd_kmh'), spd_mph = $('spd_mph'), spd_ms = $('spd_ms');
-      let spdLock = false;
-
-      const KT_TO_KMH = 1.852;
-      const KT_TO_MPH = 1.150779448;
-      const KT_TO_MS  = 0.514444444;
-
-      const speedFromKt = (kt) => ({ kt, kmh: kt*KT_TO_KMH, mph: kt*KT_TO_MPH, ms: kt*KT_TO_MS });
-      const speedFromKmh = (kmh) => speedFromKt(kmh / KT_TO_KMH);
-      const speedFromMph = (mph) => speedFromKt(mph / KT_TO_MPH);
-      const speedFromMs  = (ms)  => speedFromKt(ms / KT_TO_MS);
-
-      const updateSpeed = (src) => {
-        if (spdLock) return;
-        spdLock = true;
-
-        const vkt  = parseNum(spd_kt.value);
-        const vkmh = parseNum(spd_kmh.value);
-        const vmph = parseNum(spd_mph.value);
-        const vms  = parseNum(spd_ms.value);
-
-        let res = null;
-        if (src === 'kt' && vkt != null) res = speedFromKt(vkt);
-        else if (src === 'kmh' && vkmh != null) res = speedFromKmh(vkmh);
-        else if (src === 'mph' && vmph != null) res = speedFromMph(vmph);
-        else if (src === 'ms' && vms != null) res = speedFromMs(vms);
-        else {
-          const filled = [['kt', vkt], ['kmh', vkmh], ['mph', vmph], ['ms', vms]].filter(([,v]) => v != null);
-          if (filled.length === 1) {
-            const [k, v] = filled[0];
-            if (k === 'kt') res = speedFromKt(v);
-            if (k === 'kmh') res = speedFromKmh(v);
-            if (k === 'mph') res = speedFromMph(v);
-            if (k === 'ms') res = speedFromMs(v);
-          }
-        }
-
-        if (res) {
-          if (src !== 'kt')  setVal(spd_kt,  res.kt,  2);
-          if (src !== 'kmh') setVal(spd_kmh, res.kmh, 2);
-          if (src !== 'mph') setVal(spd_mph, res.mph, 2);
-          if (src !== 'ms')  setVal(spd_ms,  res.ms,  2);
-        }
-
-        spdLock = false;
-      };
-
-      spd_kt.addEventListener('input', () => updateSpeed('kt'));
-      spd_kmh.addEventListener('input', () => updateSpeed('kmh'));
-      spd_mph.addEventListener('input', () => updateSpeed('mph'));
-      spd_ms.addEventListener('input', () => updateSpeed('ms'));
-      $('spd_clear').addEventListener('click', () => { spd_kt.value=''; spd_kmh.value=''; spd_mph.value=''; spd_ms.value=''; });
-
-      /* ---------------- Ver/speed ---------------- */
-      const calcVS = () => {
-        const cur = parseNum($('cur_alt_ft').value);
-        const tgt = parseNum($('tgt_alt_ft').value);
-        const gs  = parseNum($('gs_kt').value);
-
-        const out = $('vs_out');
-        out.style.display = 'none';
-
-        if (cur == null || tgt == null || gs == null) return;
-
-        const delta = cur - tgt; // ft
-        if (!Number.isFinite(delta) || Math.abs(delta) < 1e-12) return;
-
-        const todNm = Math.abs(delta) / 333.3333333333;   // 3 NM / 1000 ft
-        const vsFpm = gs * 5.3 * (delta > 0 ? -1 : 1);    // negative = descend
-        const timeMin = Math.abs(delta) / (Math.abs(vsFpm) || 1);
-
-        $('out_delta_ft').textContent = fmt(delta, 0);
-        $('out_tod_nm').textContent = fmt(todNm, 1);
-        $('out_vsfpm').textContent = fmt(vsFpm, 0);
-        $('out_time_min').textContent = fmt(timeMin, 1);
-
-        out.style.display = 'block';
-      };
-      $('calc_vs').addEventListener('click', calcVS);
-      $('vs_clear').addEventListener('click', () => {
-        $('cur_alt_ft').value=''; $('tgt_alt_ft').value=''; $('gs_kt').value='';
-        $('vs_out').style.display='none';
-      });
-
-      /* ---------------- Pressure converter ---------------- */
-      const prs_hpa = $('prs_hpa'), prs_inhg = $('prs_inhg'), prs_mmhg = $('prs_mmhg');
-      let prsLock = false;
-
-      const HPA_TO_INHG = 0.0295299830714;
-      const HPA_TO_MMHG = 0.750061683;
-
-      const pFromHpa = (hpa) => ({ hpa, inhg: hpa*HPA_TO_INHG, mmhg: hpa*HPA_TO_MMHG });
-      const pFromInhg = (inhg) => pFromHpa(inhg / HPA_TO_INHG);
-      const pFromMmhg = (mmhg) => pFromHpa(mmhg / HPA_TO_MMHG);
-
-      const updatePressure = (src) => {
-        if (prsLock) return;
-        prsLock = true;
-
-        const vh = parseNum(prs_hpa.value);
-        const vi = parseNum(prs_inhg.value);
-        const vm = parseNum(prs_mmhg.value);
-
-        let res = null;
-        if (src === 'hpa' && vh != null) res = pFromHpa(vh);
-        else if (src === 'inhg' && vi != null) res = pFromInhg(vi);
-        else if (src === 'mmhg' && vm != null) res = pFromMmhg(vm);
-        else {
-          const filled = [['hpa', vh], ['inhg', vi], ['mmhg', vm]].filter(([,v]) => v != null);
-          if (filled.length === 1) {
-            const [k, v] = filled[0];
-            if (k === 'hpa') res = pFromHpa(v);
-            if (k === 'inhg') res = pFromInhg(v);
-            if (k === 'mmhg') res = pFromMmhg(v);
-          }
-        }
-
-        if (res) {
-          if (src !== 'hpa')  setVal(prs_hpa,  res.hpa,  2);
-          if (src !== 'inhg') setVal(prs_inhg, res.inhg, 2);
-          if (src !== 'mmhg') setVal(prs_mmhg, res.mmhg, 2);
-        }
-
-        prsLock = false;
-      };
-
-      prs_hpa.addEventListener('input', () => updatePressure('hpa'));
-      prs_inhg.addEventListener('input', () => updatePressure('inhg'));
-      prs_mmhg.addEventListener('input', () => updatePressure('mmhg'));
-      $('prs_clear').addEventListener('click', () => { prs_hpa.value=''; prs_inhg.value=''; prs_mmhg.value=''; });
-
-      /* ---------------- QNH/QFE/QNE ---------------- */
-      const elev_ft = $('elev_ft');
-      const dp_hpa = $('dp_hpa');
-      const qnh_hpa = $('qnh_hpa');
-      const qfe_hpa = $('qfe_hpa');
-      const q_out = $('q_out');
-
-      const FT_PER_HPA = 27.0;
-
-      const calcDP = () => {
-        const e = parseNum(elev_ft.value);
-        if (e == null) { dp_hpa.value = '—'; return null; }
-        const dp = e / FT_PER_HPA;
-        dp_hpa.value = fmt(dp, 2);
-        return dp;
-      };
-      elev_ft.addEventListener('input', calcDP);
-
-      const showQ = (qnh, qfe) => {
-        $('out_qnh').textContent = Number.isFinite(qnh) ? `${fmt(qnh, 2)} hPa / ${fmt(qnh*HPA_TO_INHG, 2)} inHg` : '—';
-        $('out_qfe').textContent = Number.isFinite(qfe) ? `${fmt(qfe, 2)} hPa / ${fmt(qfe*HPA_TO_INHG, 2)} inHg` : '—';
-        $('out_qne').textContent = '1013.25 hPa / 29.92 inHg';
-        q_out.style.display = 'block';
-      };
-
-      $('btn_qfe_from_qnh').addEventListener('click', () => {
-        const dp = calcDP();
-        const qnh = parseNum(qnh_hpa.value);
-        if (dp == null || qnh == null) return;
-        const qfe = qnh - dp;
-        setVal(qfe_hpa, qfe, 2);
-        showQ(qnh, qfe);
-      });
-
-      $('btn_qnh_from_qfe').addEventListener('click', () => {
-        const dp = calcDP();
-        const qfe = parseNum(qfe_hpa.value);
-        if (dp == null || qfe == null) return;
-        const qnh = qfe + dp;
-        setVal(qnh_hpa, qnh, 2);
-        showQ(qnh, qfe);
-      });
-
-      $('btn_qne').addEventListener('click', () => {
-        setVal(prs_hpa, 1013.25, 2);
-        updatePressure('hpa');
-        q_out.style.display = 'block';
-        $('out_qnh').textContent = '—';
-        $('out_qfe').textContent = '—';
-        $('out_qne').textContent = '1013.25 hPa / 29.92 inHg';
-      });
-
-      $('q_clear').addEventListener('click', () => {
-        elev_ft.value = '';
-        dp_hpa.value = '—';
-        qnh_hpa.value = '';
-        qfe_hpa.value = '';
-        q_out.style.display = 'none';
-      });
-
-      setJSOk();
-    } catch (e) {
-      setJSErr(e && e.message ? e.message : String(e));
-    }
+  /* ---------------- Tabs ---------------- */
+  const tabs = {
+    alt: $('tab-alt'),
+    speed: $('tab-speed'),
+    pressure: $('tab-pressure'),
+    atmos: $('tab-atmos'),
+    vnav: $('tab-vnav'),
+    wind: $('tab-wind'),
+    airspeed: $('tab-airspeed'),
+  };
+  document.querySelectorAll('.tabbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
+      Object.values(tabs).forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      tabs[btn.dataset.tab].classList.add('active');
+    });
   });
+
+  /* ---------------- ALT converter ---------------- */
+  const alt_ft = $('alt_ft'), alt_m = $('alt_m'), alt_km = $('alt_km');
+  let altLock = false;
+
+  const altFromFt = (ft) => {
+    const m = ft * 0.3048;
+    return { ft, m, km: m / 1000 };
+  };
+  const altFromM = (m) => {
+    const ft = m / 0.3048;
+    return { ft, m, km: m / 1000 };
+  };
+  const altFromKm = (km) => {
+    const m = km * 1000;
+    const ft = m / 0.3048;
+    return { ft, m, km };
+  };
+
+  const updateAlt = (src) => {
+    if (altLock) return;
+    altLock = true;
+
+    const vft = parseNum(alt_ft.value);
+    const vm  = parseNum(alt_m.value);
+    const vkm = parseNum(alt_km.value);
+
+    let res = null;
+    if (src === 'ft' && vft != null) res = altFromFt(vft);
+    else if (src === 'm' && vm != null) res = altFromM(vm);
+    else if (src === 'km' && vkm != null) res = altFromKm(vkm);
+    else {
+      const filled = [['ft', vft], ['m', vm], ['km', vkm]].filter(([,v]) => v != null);
+      if (filled.length === 1) {
+        const [k,v] = filled[0];
+        if (k === 'ft') res = altFromFt(v);
+        if (k === 'm')  res = altFromM(v);
+        if (k === 'km') res = altFromKm(v);
+      }
+    }
+
+    if (res) {
+      if (src !== 'ft') setVal(alt_ft, res.ft, 0);
+      if (src !== 'm')  setVal(alt_m,  res.m,  0);
+      if (src !== 'km') setVal(alt_km, res.km, 3);
+    }
+
+    altLock = false;
+  };
+
+  alt_ft.addEventListener('input', () => updateAlt('ft'));
+  alt_m.addEventListener('input', () => updateAlt('m'));
+  alt_km.addEventListener('input', () => updateAlt('km'));
+  $('alt_clear').addEventListener('click', () => { alt_ft.value=''; alt_m.value=''; alt_km.value=''; });
+
+  /* ---------------- SPEED converter ---------------- */
+  const spd_kt = $('spd_kt'), spd_kmh = $('spd_kmh'), spd_mph = $('spd_mph'), spd_ms = $('spd_ms');
+  let spdLock = false;
+
+  const KT_TO_KMH = 1.852;
+  const KT_TO_MPH = 1.150779448;
+  const KT_TO_MS  = 0.514444444;
+
+  const speedFromKt = (kt) => ({ kt, kmh: kt*KT_TO_KMH, mph: kt*KT_TO_MPH, ms: kt*KT_TO_MS });
+  const speedFromKmh = (kmh) => speedFromKt(kmh / KT_TO_KMH);
+  const speedFromMph = (mph) => speedFromKt(mph / KT_TO_MPH);
+  const speedFromMs  = (ms)  => speedFromKt(ms / KT_TO_MS);
+
+  const updateSpeed = (src) => {
+    if (spdLock) return;
+    spdLock = true;
+
+    const vkt  = parseNum(spd_kt.value);
+    const vkmh = parseNum(spd_kmh.value);
+    const vmph = parseNum(spd_mph.value);
+    const vms  = parseNum(spd_ms.value);
+
+    let res = null;
+    if (src === 'kt' && vkt != null) res = speedFromKt(vkt);
+    else if (src === 'kmh' && vkmh != null) res = speedFromKmh(vkmh);
+    else if (src === 'mph' && vmph != null) res = speedFromMph(vmph);
+    else if (src === 'ms' && vms != null) res = speedFromMs(vms);
+    else {
+      const filled = [['kt', vkt], ['kmh', vkmh], ['mph', vmph], ['ms', vms]].filter(([,v]) => v != null);
+      if (filled.length === 1) {
+        const [k,v] = filled[0];
+        if (k === 'kt') res = speedFromKt(v);
+        if (k === 'kmh') res = speedFromKmh(v);
+        if (k === 'mph') res = speedFromMph(v);
+        if (k === 'ms') res = speedFromMs(v);
+      }
+    }
+
+    if (res) {
+      if (src !== 'kt')  setVal(spd_kt,  res.kt,  2);
+      if (src !== 'kmh') setVal(spd_kmh, res.kmh, 2);
+      if (src !== 'mph') setVal(spd_mph, res.mph, 2);
+      if (src !== 'ms')  setVal(spd_ms,  res.ms,  2);
+    }
+
+    spdLock = false;
+  };
+
+  spd_kt.addEventListener('input', () => updateSpeed('kt'));
+  spd_kmh.addEventListener('input', () => updateSpeed('kmh'));
+  spd_mph.addEventListener('input', () => updateSpeed('mph'));
+  spd_ms.addEventListener('input', () => updateSpeed('ms'));
+  $('spd_clear').addEventListener('click', () => { spd_kt.value=''; spd_kmh.value=''; spd_mph.value=''; spd_ms.value=''; });
+
+  /* ---------------- PRESSURE converter ---------------- */
+  const prs_hpa = $('prs_hpa'), prs_inhg = $('prs_inhg'), prs_mmhg = $('prs_mmhg');
+  let prsLock = false;
+
+  const HPA_TO_INHG = 0.0295299830714;
+  const HPA_TO_MMHG = 0.750061683;
+
+  const pFromHpa = (hpa) => ({ hpa, inhg: hpa*HPA_TO_INHG, mmhg: hpa*HPA_TO_MMHG });
+  const pFromInhg = (inhg) => pFromHpa(inhg / HPA_TO_INHG);
+  const pFromMmhg = (mmhg) => pFromHpa(mmhg / HPA_TO_MMHG);
+
+  const updatePressure = (src) => {
+    if (prsLock) return;
+    prsLock = true;
+
+    const vh = parseNum(prs_hpa.value);
+    const vi = parseNum(prs_inhg.value);
+    const vm = parseNum(prs_mmhg.value);
+
+    let res = null;
+    if (src === 'hpa' && vh != null) res = pFromHpa(vh);
+    else if (src === 'inhg' && vi != null) res = pFromInhg(vi);
+    else if (src === 'mmhg' && vm != null) res = pFromMmhg(vm);
+    else {
+      const filled = [['hpa', vh], ['inhg', vi], ['mmhg', vm]].filter(([,v]) => v != null);
+      if (filled.length === 1) {
+        const [k, v] = filled[0];
+        if (k === 'hpa') res = pFromHpa(v);
+        if (k === 'inhg') res = pFromInhg(v);
+        if (k === 'mmhg') res = pFromMmhg(v);
+      }
+    }
+
+    if (res) {
+      if (src !== 'hpa')  setVal(prs_hpa,  res.hpa,  2);
+      if (src !== 'inhg') setVal(prs_inhg, res.inhg, 2);
+      if (src !== 'mmhg') setVal(prs_mmhg, res.mmhg, 2);
+    }
+
+    prsLock = false;
+  };
+
+  prs_hpa.addEventListener('input', () => updatePressure('hpa'));
+  prs_inhg.addEventListener('input', () => updatePressure('inhg'));
+  prs_mmhg.addEventListener('input', () => updatePressure('mmhg'));
+  $('prs_clear').addEventListener('click', () => { prs_hpa.value=''; prs_inhg.value=''; prs_mmhg.value=''; });
+
+  /* ---------------- QNH/QFE/QNE ---------------- */
+  const FT_PER_HPA = 27.0;
+
+  const q_elev_ft = $('q_elev_ft');
+  const q_dp_hpa = $('q_dp_hpa');
+  const q_qnh_hpa = $('q_qnh_hpa');
+  const q_qfe_hpa = $('q_qfe_hpa');
+  const q_out = $('q_out');
+
+  const calcDP = () => {
+    const e = parseNum(q_elev_ft.value);
+    if (e == null) { q_dp_hpa.value = '—'; return null; }
+    const dp = e / FT_PER_HPA;
+    q_dp_hpa.value = fmt(dp, 2);
+    return dp;
+  };
+  q_elev_ft.addEventListener('input', calcDP);
+
+  const showQ = (qnh, qfe) => {
+    $('q_out_qnh').textContent = Number.isFinite(qnh) ? `${fmt(qnh, 2)} hPa / ${fmt(qnh*HPA_TO_INHG, 2)} inHg` : '—';
+    $('q_out_qfe').textContent = Number.isFinite(qfe) ? `${fmt(qfe, 2)} hPa / ${fmt(qfe*HPA_TO_INHG, 2)} inHg` : '—';
+    q_out.style.display = 'block';
+  };
+
+  $('q_btn_qfe_from_qnh').addEventListener('click', () => {
+    const dp = calcDP();
+    const qnh = parseNum(q_qnh_hpa.value);
+    if (dp == null || qnh == null) return;
+    const qfe = qnh - dp;
+    setVal(q_qfe_hpa, qfe, 2);
+    showQ(qnh, qfe);
+  });
+
+  $('q_btn_qnh_from_qfe').addEventListener('click', () => {
+    const dp = calcDP();
+    const qfe = parseNum(q_qfe_hpa.value);
+    if (dp == null || qfe == null) return;
+    const qnh = qfe + dp;
+    setVal(q_qnh_hpa, qnh, 2);
+    showQ(qnh, qfe);
+  });
+
+  $('q_btn_qne').addEventListener('click', () => {
+    setVal(prs_hpa, 1013.25, 2);
+    updatePressure('hpa');
+    q_out.style.display = 'block';
+  });
+
+  $('q_clear').addEventListener('click', () => {
+    q_elev_ft.value = '';
+    q_dp_hpa.value = '—';
+    q_qnh_hpa.value = '';
+    q_qfe_hpa.value = '';
+    q_out.style.display = 'none';
+  });
+
+  /* ---------------- Altimeter error (wrong QNH) ---------------- */
+  $('alt_err_calc').addEventListener('click', () => {
+    const ind = parseNum($('alt_err_ind_ft').value);
+    const setQ = parseNum($('alt_err_set_hpa').value);
+    const actQ = parseNum($('alt_err_act_hpa').value);
+    const out = $('alt_err_out');
+    out.style.display = 'none';
+
+    if (ind == null || setQ == null || actQ == null) return;
+
+    // error in indicated relative to true:
+    // (set - actual) hPa -> ~27 ft/hPa. Positive means altimeter shows too high.
+    const err = (setQ - actQ) * FT_PER_HPA;
+    const trueAlt = ind - err;
+
+    $('alt_err_out_err').textContent = fmt(err, 0);
+    $('alt_err_out_true').textContent = fmt(trueAlt, 0);
+    out.style.display = 'block';
+  });
+
+  $('alt_err_clear').addEventListener('click', () => {
+    $('alt_err_ind_ft').value = '';
+    $('alt_err_set_hpa').value = '';
+    $('alt_err_act_hpa').value = '';
+    $('alt_err_out').style.display = 'none';
+  });
+
+  /* ---------------- ISA / Atmosphere helpers ---------------- */
+  // ISA constants
+  const T0 = 288.15;      // K
+  const P0 = 101325.0;    // Pa
+  const rho0 = 1.225;     // kg/m3
+  const g = 9.80665;      // m/s2
+  const R = 287.05287;    // J/(kg*K)
+  const gamma = 1.4;
+  const L = 0.0065;       // K/m (lapse rate)
+  const ft2m = 0.3048;
+
+  function isaTempC_atAltFt(altFt) {
+    const h = Math.max(0, altFt) * ft2m;
+    // up to tropopause ~11km
+    const T = T0 - L * Math.min(h, 11000);
+    return T - 273.15;
+  }
+
+  function isaPressurePa_atAltFt(altFt) {
+    const h = Math.max(0, altFt) * ft2m;
+    if (h <= 11000) {
+      const T = T0 - L*h;
+      return P0 * Math.pow(T / T0, g/(R*L));
+    } else {
+      // simple extension above tropopause (not really needed for most sim ops)
+      const T11 = T0 - L*11000;
+      const P11 = P0 * Math.pow(T11 / T0, g/(R*L));
+      return P11 * Math.exp(-g*(h-11000)/(R*T11));
+    }
+  }
+
+  function densityKgM3(altFt, oatC) {
+    // Use ISA pressure at geometric altitude + actual temperature for density (approx)
+    const p = isaPressurePa_atAltFt(altFt);
+    const T = (oatC + 273.15);
+    return p / (R*T);
+  }
+
+  function speedOfSoundKt(oatC) {
+    const T = oatC + 273.15;
+    const a = Math.sqrt(gamma * R * T);      // m/s
+    return a * 1.943844492;                  // kt
+  }
+
+  /* ---------------- ATMOS tab ---------------- */
+  $('atm_calc').addEventListener('click', () => {
+    const altFt = parseNum($('atm_alt_ft').value);
+    const oatC  = parseNum($('atm_oat_c').value);
+    const qnh   = parseNum($('atm_qnh_hpa').value);
+    const heightFt = parseNum($('atm_height_ft').value);
+
+    const out = $('atm_out');
+    out.style.display = 'none';
+
+    if (altFt == null || oatC == null || qnh == null || heightFt == null) return;
+
+    const isaC = isaTempC_atAltFt(altFt);
+    const dISA = oatC - isaC;
+
+    // Pressure altitude (approx, using indicated altitude input as "altFt"):
+    const pa = altFt + (1013.25 - qnh) * FT_PER_HPA;
+
+    // ISA temp at PA:
+    const isaAtPaC = isaTempC_atAltFt(pa);
+
+    // Density altitude (rule of thumb):
+    const da = pa + 120.0 * (oatC - isaAtPaC);
+
+    // Temperature correction (true - indicated) approx:
+    // 4 ft per 1000 ft per °C deviation (ΔISA).
+    const tempCorr = 4.0 * (heightFt/1000.0) * dISA;
+
+    $('atm_out_isa_c').textContent = fmt(isaC, 1);
+    $('atm_out_disa').textContent  = fmt(dISA, 1);
+    $('atm_out_pa').textContent    = fmt(pa, 0);
+    $('atm_out_da').textContent    = fmt(da, 0);
+    $('atm_out_tc').textContent    = fmt(tempCorr, 0);
+
+    out.style.display = 'block';
+  });
+
+  $('atm_clear').addEventListener('click', () => {
+    $('atm_alt_ft').value = '';
+    $('atm_oat_c').value = '';
+    $('atm_qnh_hpa').value = '';
+    $('atm_height_ft').value = '';
+    $('atm_out').style.display = 'none';
+  });
+
+  /* ---------------- VNAV tab ---------------- */
+  $('vn_calc').addEventListener('click', () => {
+    const cur = parseNum($('vn_cur_ft').value);
+    const tgt = parseNum($('vn_tgt_ft').value);
+    const ang = parseNum($('vn_angle_deg').value);
+    const buf = parseNum($('vn_buf_nm').value);
+
+    const gsIn = parseNum($('vn_gs_kt').value);
+    const tas  = parseNum($('vn_tas_kt').value);
+    const wc   = parseNum($('vn_windcomp_kt').value); // + headwind / - tailwind
+
+    const out = $('vn_out');
+    out.style.display = 'none';
+
+    if (cur == null || tgt == null || ang == null || buf == null) return;
+
+    const dAlt = cur - tgt; // positive = descend
+    if (!Number.isFinite(dAlt) || Math.abs(dAlt) < 1e-9) return;
+
+    // compute GS:
+    let gs = null;
+    if (gsIn != null) gs = gsIn;
+    else if (tas != null && wc != null) gs = tas - wc;
+    if (gs == null || !Number.isFinite(gs) || gs <= 0) return;
+    $('vn_gs_calc').value = fmt(gs, 1);
+
+    const rad = toRad(Math.max(0.1, ang));
+    const vertPerNm = 6076.0 * Math.tan(rad);         // ft per NM
+    const tod = (Math.abs(dAlt) / vertPerNm) + buf;   // NM
+    const vsAbs = gs * vertPerNm / 60.0;              // fpm
+    const vs = (dAlt > 0) ? -vsAbs : vsAbs;           // negative for descent
+    const timeMin = (tod / gs) * 60.0;                // minutes (NM / (NM/hr))
+
+    $('vn_out_dalt').textContent = fmt(dAlt, 0);
+    $('vn_out_tod').textContent  = fmt(tod, 1);
+    $('vn_out_vs').textContent   = fmt(vs, 0);
+    $('vn_out_time').textContent = fmt(timeMin, 1);
+
+    out.style.display = 'block';
+  });
+
+  $('vn_clear').addEventListener('click', () => {
+    $('vn_cur_ft').value = '';
+    $('vn_tgt_ft').value = '';
+    $('vn_angle_deg').value = '3.0';
+    $('vn_buf_nm').value = '0';
+    $('vn_gs_kt').value = '';
+    $('vn_tas_kt').value = '';
+    $('vn_windcomp_kt').value = '';
+    $('vn_gs_calc').value = '—';
+    $('vn_out').style.display = 'none';
+  });
+
+  /* ---------------- WIND tab (WCA) ---------------- */
+  $('w_calc').addEventListener('click', () => {
+    const course = parseNum($('w_course').value);
+    const tas = parseNum($('w_tas').value);
+    const wFrom = parseNum($('w_from').value);
+    const wSpd = parseNum($('w_spd').value);
+
+    const out = $('w_out');
+    out.style.display = 'none';
+
+    if (course == null || tas == null || wFrom == null || wSpd == null) return;
+    if (tas <= 0 || wSpd < 0) return;
+
+    const windTo = norm360(wFrom + 180);
+    const rel = toRad(norm360(windTo - course)); // wind vector angle relative to course direction
+    const xwind = wSpd * Math.sin(rel);          // + means pushing to the right of course
+    const tail  = wSpd * Math.cos(rel);          // + tailwind, - headwind
+
+    const ratio = clamp(xwind / tas, -1, 1);
+    const wcaRad = Math.asin(ratio);
+    const wcaDeg = wcaRad * 180/Math.PI;
+
+    const heading = norm360(course + wcaDeg);
+    const gs = tas * Math.cos(wcaRad) + tail;
+
+    $('w_out_xw').textContent  = fmt(xwind, 1);
+    $('w_out_ht').textContent  = fmt(tail, 1);
+    $('w_out_wca').textContent = fmt(wcaDeg, 1);
+    $('w_out_hdg').textContent = fmt(heading, 0);
+    $('w_out_gs').textContent  = fmt(gs, 1);
+
+    out.style.display = 'block';
+  });
+
+  $('w_clear').addEventListener('click', () => {
+    $('w_course').value = '';
+    $('w_tas').value = '';
+    $('w_from').value = '';
+    $('w_spd').value = '';
+    $('w_out').style.display = 'none';
+  });
+
+  /* ---------------- Mach / IAS / TAS tab ---------------- */
+  $('as_calc').addEventListener('click', () => {
+    const altFt = parseNum($('as_alt_ft').value);
+    const oatC  = parseNum($('as_oat_c').value);
+    const ias   = parseNum($('as_ias_kt').value);
+    const tas   = parseNum($('as_tas_kt').value);
+    const mach  = parseNum($('as_mach').value);
+    const mode  = $('as_mode').value;
+
+    const out = $('as_out');
+    out.style.display = 'none';
+
+    if (altFt == null || oatC == null) return;
+
+    const isaC = isaTempC_atAltFt(altFt);
+    const aKt  = speedOfSoundKt(oatC);
+
+    // density ratio sigma (using ISA pressure + actual temperature):
+    const rho = densityKgM3(altFt, oatC);
+    const sigma = rho / rho0;
+
+    let outIAS = null, outTAS = null, outM = null;
+
+    if (mode === 'ias_to_tas') {
+      if (ias == null) return;
+      outIAS = ias;
+      outTAS = ias / Math.sqrt(Math.max(1e-9, sigma));
+      outM = outTAS / aKt;
+    } else if (mode === 'tas_to_ias') {
+      if (tas == null) return;
+      outTAS = tas;
+      outIAS = tas * Math.sqrt(Math.max(1e-9, sigma));
+      outM = outTAS / aKt;
+    } else if (mode === 'mach_to_tas') {
+      if (mach == null) return;
+      outM = mach;
+      outTAS = mach * aKt;
+      // IAS optional from TAS:
+      outIAS = outTAS * Math.sqrt(Math.max(1e-9, sigma));
+    } else if (mode === 'tas_to_mach') {
+      if (tas == null) return;
+      outTAS = tas;
+      outM = tas / aKt;
+      outIAS = outTAS * Math.sqrt(Math.max(1e-9, sigma));
+    }
+
+    $('as_out_isa').textContent = fmt(isaC, 1);
+    $('as_out_a').textContent = fmt(aKt, 1);
+    $('as_out_sigma').textContent = fmt(sigma, 4);
+
+    $('as_out_ias').textContent = fmt(outIAS, 1);
+    $('as_out_tas').textContent = fmt(outTAS, 1);
+    $('as_out_m').textContent   = fmt(outM, 3);
+
+    // also update input boxes for convenience:
+    if (Number.isFinite(outIAS)) setVal($('as_ias_kt'), outIAS, 1);
+    if (Number.isFinite(outTAS)) setVal($('as_tas_kt'), outTAS, 1);
+    if (Number.isFinite(outM))   setVal($('as_mach'), outM, 3);
+
+    out.style.display = 'block';
+  });
+
+  $('as_clear').addEventListener('click', () => {
+    $('as_alt_ft').value = '';
+    $('as_oat_c').value = '';
+    $('as_ias_kt').value = '';
+    $('as_tas_kt').value = '';
+    $('as_mach').value = '';
+    $('as_mode').value = 'ias_to_tas';
+    $('as_out').style.display = 'none';
+  });
+
 })();
 </script>
 </body>
